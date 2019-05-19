@@ -5,7 +5,7 @@
     <h1>My App</h1>
     <% if(user) { %>
     <div>Welcome User</div>
-    <a href='/logout'>Logout</a>
+    <a href='/logout'>Logout <%= user.name %></a>
     <% } else { %>
     <a href='/login'>Login</a>
     <% }  %>

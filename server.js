@@ -10,10 +10,19 @@ const path = require('path');
 const app = express();
 const ejs = require('ejs');
 const qs = require('querystring');
+const session = require('express-session');
 app.engine('html', ejs.renderFile);
 
+app.use(session({
+  secret: process.env.SESSION
+}));
+
 app.get('/', (req, res, next)=> {
-  res.render(path.join(__dirname, 'index.html'), { user: undefined });
+  res.render(path.join(__dirname, 'index.html'), { user: req.session.user  });
+});
+
+app.get('/logout', (req, res, next)=> {
+  req.session.destroy(()=> res.redirect('/'));
 });
 
 app.get('/github/callback', (req, res, next)=> {
@@ -32,7 +41,10 @@ app.get('/github/callback', (req, res, next)=> {
     })
   })
   .then(response => response.data)
-  .then(githubUser => res.send(githubUser))
+  .then(githubUser => {
+    req.session.user = githubUser;
+    res.redirect('/');
+  })
   .catch(next);
 });
 
